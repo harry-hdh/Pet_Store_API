@@ -9,6 +9,21 @@
 	"item": [
 		{
 			"name": "GetAllPet",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -34,33 +49,33 @@
 			"response": []
 		},
 		{
-			"name": "GetAllPetById",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{baseUrl}}/api/v3/pet/{{petId}}",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"v3",
-						"pet",
-						"{{petId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "CreatePet",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"let response = pm.response.json();\r",
+							"pm.environment.set('petId', response.id);\r",
+							"pm.environment.set('petName', response.name);\r",
+							"pm.environment.set('petCategoryName', response.category.name);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"id\": 1011,\r\n  \"name\": \"SharkDoo\",\r\n  \"category\": {\r\n    \"id\": 1,\r\n    \"name\": \"Shark\"\r\n  },\r\n  \"photoUrls\": [\r\n    \"https://www.pngwing.com/en/free-png-aayyw\"\r\n  ],\r\n  \"tags\": [\r\n    {\r\n      \"id\": 1012,\r\n      \"name\": \"mysharky\"\r\n    }\r\n  ],\r\n  \"status\": \"available\"\r\n}",
+					"raw": "{\r\n  \"id\": {{$randomInt}},\r\n  \"name\": \"SharkDoo\",\r\n  \"category\": {\r\n    \"id\": 1,\r\n    \"name\": \"Shark\"\r\n  },\r\n  \"photoUrls\": [\r\n    \"https://www.pngwing.com/en/free-png-aayyw\"\r\n  ],\r\n  \"tags\": [\r\n    {\r\n      \"id\": 1012,\r\n      \"name\": \"mysharky\"\r\n    }\r\n  ],\r\n  \"status\": \"available\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -82,13 +97,76 @@
 			"response": []
 		},
 		{
+			"name": "GetPetById",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Check if category is shark\",function(){\r",
+							"\tlet data = pm.response.json();\r",
+							"\tpm.expect(data.category.name).to.eql(pm.environment.get('petCategoryName'));\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v3/pet/{{petId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v3",
+						"pet",
+						"{{petId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "UpdatePet",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Check new updated pet name\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.name).to.eql(pm.environment.get('petUpdateName'));\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set('petUpdateName', 'DummpShark');"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"method": "PUT",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"id\": 1011,\r\n  \"name\": \"SharkDoo_tank\",\r\n  \"category\": {\r\n    \"id\": 222,\r\n    \"name\": \"Shark\"\r\n  },\r\n  \"photoUrls\": [\r\n    \"https://www.pngwing.com/en/free-png-aayyw\"\r\n  ],\r\n  \"tags\": [\r\n    {\r\n      \"id\": 1012,\r\n      \"name\": \"mysharky\"\r\n    }\r\n  ],\r\n  \"status\": \"available\"\r\n}",
+					"raw": "{\r\n  \"id\": {{petId}},\r\n  \"name\": \"{{petUpdateName}}\",\r\n  \"category\": {\r\n    \"id\": 222,\r\n    \"name\": \"Shark\"\r\n  },\r\n  \"photoUrls\": [\r\n    \"{{$randomAnimalsImage}}\"\r\n  ],\r\n  \"tags\": [\r\n    {\r\n      \"id\": 1012,\r\n      \"name\": \"mysharky\"\r\n    }\r\n  ],\r\n  \"status\": \"available\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -111,11 +189,31 @@
 		},
 		{
 			"name": "GetAllPetById Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Test if message contains OK\", function(){\r",
+							"\tpm.expect(pm.response.status).to.contain('OK');\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/api/v3/pet/72",
+					"raw": "{{baseUrl}}/api/v3/pet/{{petId}}",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -123,7 +221,7 @@
 						"api",
 						"v3",
 						"pet",
-						"72"
+						"{{petId}}"
 					]
 				}
 			},
@@ -155,13 +253,24 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "",
+			"value": "https://petstore3.swagger.io",
 			"type": "string"
 		},
 		{
 			"key": "petId",
 			"value": "",
-			"type": "string"
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "petName",
+			"value": "",
+			"disabled": true
+		},
+		{
+			"key": "petCategoryName",
+			"value": "",
+			"disabled": true
 		}
 	]
 }
